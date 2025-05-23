@@ -17,6 +17,7 @@ export class CoursesController {
 
   @Post()
   create(@Body() createCourseDto: CreateCourseDto) {
+    console.log('Received body:', createCourseDto);
     return this.coursesService.create(createCourseDto);
   }
 
@@ -25,18 +26,21 @@ export class CoursesController {
     return this.coursesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.coursesService.findOne(+id);
+  @Get(':courseId')
+  findOne(@Param('courseId') courseId: string) {
+    return this.coursesService.findOne(+courseId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
-    return this.coursesService.update(+id, updateCourseDto);
+  @Patch(':courseId')
+  update(
+    @Param('courseId') courseId: string,
+    @Body() updateCourseDto: UpdateCourseDto,
+  ) {
+    return this.coursesService.update(+courseId, updateCourseDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.coursesService.remove(+id);
+  @Delete(':courseId')
+  remove(@Param('courseId') courseId: string) {
+    return this.coursesService.remove(+courseId);
   }
 }

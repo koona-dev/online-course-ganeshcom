@@ -1,7 +1,7 @@
 //schema.ts
 import { pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
 
-export const Courses = pgTable('courses', {
+export const courses = pgTable('courses', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 20 }),
   email: varchar('email', { length: 20 }),

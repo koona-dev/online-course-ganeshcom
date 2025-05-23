@@ -1,34 +1,53 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+
+import { DatabaseAsyncProvider } from 'src/database/database.provider';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
-import { DatabaseAsyncProvider } from 'src/database/database.provider';
-import * as CourseSchema from './schema/course.schema';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import * as courseSchema from './schema/course.schema';
 
 @Injectable()
 export class CoursesService {
   constructor(
     @Inject(DatabaseAsyncProvider)
-    private readonly database: NodePgDatabase<typeof CourseSchema>,
+    private readonly database: NodePgDatabase<typeof courseSchema>,
   ) {}
+  async create(createCourseDto: CreateCourseDto) {
+    const result = await this.database
+      .insert(courseSchema.courses)
+      .values(createCourseDto)
+      .returning();
 
-  create(createCourseDto: CreateCourseDto) {
-    return 'This action adds a new course';
+    console.log(result);
   }
 
-  findAll() {
-    return `This action returns all courses`;
+  async findAll() {
+    const courseData = await this.database.select().from(courseSchema.courses);
+    return courseData;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+  async findOne(courseId: number) {
+    const course = await this.database.query.courses.findFirst({
+      where: eq(courseSchema.courses.id, courseId),
+    });
+
+    return course;
   }
 
-  update(id: number, updateCourseDto: UpdateCourseDto) {
-    return `This action updates a #${id} course`;
+  async update(courseId: number, updateCourseDto: UpdateCourseDto) {
+    const updatedCourse = await this.database
+      .update(courseSchema.courses)
+      .set(updateCourseDto)
+      .where(eq(courseSchema.courses.id, courseId))
+      .returning();
+
+    return updatedCourse;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} course`;
+  async remove(courseId: number) {
+    await this.database
+      .delete(courseSchema.courses)
+      .where(eq(courseSchema.courses.id, courseId));
   }
 }

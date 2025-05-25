@@ -9,6 +9,8 @@ import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { CoursesController } from './courses/courses.controller';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { PaymentsModule } from './payments/payments.module';
+import { EnrollmentsModule } from './enrollments/enrollments.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     CoursesModule,
     AuthModule,
     UsersModule,
+    PaymentsModule,
+    EnrollmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

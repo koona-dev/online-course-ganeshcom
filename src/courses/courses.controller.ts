@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
+  ParseIntPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -19,9 +22,8 @@ export class CoursesController {
 
   @Post()
   @UseGuards(AdminJwtGuard)
-  create(@Body() createCourseDto: CreateCourseDto) {
-    console.log('Received body:', createCourseDto);
-    return this.coursesService.create(createCourseDto);
+  create(@Body() createCourseDto: CreateCourseDto, @Request() request) {
+    return this.coursesService.create(+request.user.userId, createCourseDto);
   }
 
   @Get()
@@ -30,14 +32,20 @@ export class CoursesController {
   }
 
   @Get(':courseId')
-  findOne(@Param('courseId') courseId: string) {
+  findOne(
+    @Param(
+      'courseId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    courseId: string,
+  ) {
     return this.coursesService.findOne(+courseId);
   }
 
   @Patch(':courseId')
   @UseGuards(AdminJwtGuard)
   update(
-    @Param('courseId') courseId: string,
+    @Param('courseId', ParseIntPipe) courseId: string,
     @Body() updateCourseDto: UpdateCourseDto,
   ) {
     return this.coursesService.update(+courseId, updateCourseDto);
@@ -45,7 +53,7 @@ export class CoursesController {
 
   @Delete(':courseId')
   @UseGuards(AdminJwtGuard)
-  remove(@Param('courseId') courseId: string) {
+  remove(@Param('courseId', ParseIntPipe) courseId: string) {
     return this.coursesService.remove(+courseId);
   }
 }

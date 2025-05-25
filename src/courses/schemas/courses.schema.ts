@@ -1,4 +1,5 @@
 //schema.ts
+import { relations } from 'drizzle-orm';
 import {
   doublePrecision,
   integer,
@@ -22,3 +23,12 @@ export const courses = pgTable('courses', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
+
+export const courseRelations = relations(courses, ({ one, many }) => ({
+  user: one(users, {
+    fields: [courses.instrukturId],
+    references: [users.id],
+  }),
+}));
+
+export type CoursesType = typeof courses.$inferSelect;

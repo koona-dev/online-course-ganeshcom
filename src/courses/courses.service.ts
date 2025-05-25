@@ -2,52 +2,63 @@ import { Inject, Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
-import { DatabaseAsyncProvider } from 'src/database/database.provider';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
-import * as courseSchema from './schemas/courses.schema';
+import { courses, CoursesType } from './schemas/courses.schema';
+import { DatabaseAsyncProvider } from 'src/database/database.provider';
+import { QueryResult } from 'pg';
 
 @Injectable()
 export class CoursesService {
   constructor(
     @Inject(DatabaseAsyncProvider)
-    private readonly database: NodePgDatabase<typeof courseSchema>,
+    private readonly coursesRepository: NodePgDatabase<CoursesType>,
   ) {}
-  async create(createCourseDto: CreateCourseDto) {
-    const result = await this.database
-      .insert(courseSchema.courses)
-      .values(createCourseDto)
+
+  async create(
+    userId: number,
+    createCourseDto: CreateCourseDto,
+  ): Promise<CoursesType> {
+    const savedCourse = await this.coursesRepository
+      .insert(courses)
+      .values({ ...createCourseDto, instrukturId: userId })
       .returning();
 
-    console.log(result);
+    return savedCourse[0];
   }
 
-  async findAll() {
-    const courseData = await this.database.select().from(courseSchema.courses);
+  async findAll(): Promise<CoursesType[]> {
+    const courseData = await this.coursesRepository.select().from(courses);
     return courseData;
   }
 
-  async findOne(courseId: number) {
-    const course = await this.database.query.courses.findFirst({
-      where: eq(courseSchema.courses.id, courseId),
-    });
+  async findOne(courseId: number): Promise<CoursesType> {
+    const course = await this.coursesRepository
+      .select()
+      .from(courses)
+      .where(eq(courses.id, courseId))
+      .limit(1);
 
-    return course;
+    return course[0];
   }
-
-  async update(courseId: number, updateCourseDto: UpdateCourseDto) {
-    const updatedCourse = await this.database
-      .update(courseSchema.courses)
+  async update(
+    courseId: number,
+    updateCourseDto: UpdateCourseDto,
+  ): Promise<CoursesType> {
+    const updatedCourse = await this.coursesRepository
+      .update(courses)
       .set(updateCourseDto)
-      .where(eq(courseSchema.courses.id, courseId))
+      .where(eq(courses.id, courseId))
       .returning();
 
-    return updatedCourse;
+    return updatedCourse[0];
   }
 
-  async remove(courseId: number) {
-    await this.database
-      .delete(courseSchema.courses)
-      .where(eq(courseSchema.courses.id, courseId));
+  async remove(courseId: number): Promise<QueryResult<never>> {
+    const deletedUser = await this.coursesRepository
+      .delete(courses)
+      .where(eq(courses.id, courseId));
+
+    return deletedUser;
   }
 }

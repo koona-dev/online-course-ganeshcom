@@ -4,7 +4,7 @@ import path from 'path';
 import pg from 'pg';
 import { exit } from 'process';
 
-import * as CourseSchema from '../src/courses/schema/course.schema';
+import * as CourseSchema from '../src/courses/schemas/courses.schema';
 
 await (async () => {
   const env = process.env;

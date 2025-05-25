@@ -5,7 +5,7 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DatabaseAsyncProvider } from 'src/database/database.provider';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
-import * as courseSchema from './schema/course.schema';
+import * as courseSchema from './schemas/courses.schema';
 
 @Injectable()
 export class CoursesService {

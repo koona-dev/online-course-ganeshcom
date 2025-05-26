@@ -1,8 +1,11 @@
 //drizzle.provider.ts
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import * as CourseSchema from '../courses/schemas/courses.schema';
 import { ConfigService } from '@nestjs/config';
+
+import * as usersSchema from 'src/users/schemas/users.schema';
+import * as coursesSchema from '../courses/schemas/courses.schema';
+import * as ordersSchema from 'src/orders/schemas/orders.schema';
 
 export const DatabaseAsyncProvider = 'DatabaseAsyncProvider';
 
@@ -17,7 +20,9 @@ export const DatabaseProvider = [
         connectionString,
       });
 
-      return drizzle(pool, { schema: { ...CourseSchema } });
+      return drizzle(pool, {
+        schema: { ...usersSchema, ...coursesSchema, ...ordersSchema },
+      });
     },
   },
 ];

@@ -1,15 +1,11 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateOrderDto {
   @IsNumber()
   @IsNotEmpty()
-  readonly totalAmount: number;
+  readonly quantity: number;
 
+  @IsNumber()
   @IsNotEmpty()
-  @IsString()
-  readonly orderMethod: string;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly orderStatus: string;
+  readonly totalPrice: number;
 }

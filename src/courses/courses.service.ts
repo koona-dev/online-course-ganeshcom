@@ -55,10 +55,10 @@ export class CoursesService {
   }
 
   async remove(courseId: number): Promise<QueryResult<never>> {
-    const deletedUser = await this.coursesRepository
+    const deletedCourse = await this.coursesRepository
       .delete(courses)
       .where(eq(courses.id, courseId));
 
-    return deletedUser;
+    return deletedCourse;
   }
 }

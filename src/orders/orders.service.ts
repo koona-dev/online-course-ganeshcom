@@ -66,10 +66,10 @@ export class OrdersService {
   }
 
   async remove(orderId: number): Promise<QueryResult<never>> {
-    const deletedUser = await this.ordersRepository
+    const deletedOrder = await this.ordersRepository
       .delete(orders)
       .where(eq(orders.id, orderId));
 
-    return deletedUser;
+    return deletedOrder;
   }
 }

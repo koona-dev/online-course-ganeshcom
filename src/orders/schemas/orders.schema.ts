@@ -1,27 +1,19 @@
 //schema.ts
 import { relations } from 'drizzle-orm';
-import {
-  integer,
-  pgTable,
-  serial,
-  timestamp,
-  varchar,
-} from 'drizzle-orm/pg-core';
+import { integer, pgTable, serial, timestamp } from 'drizzle-orm/pg-core';
+import { payments } from 'src/payments/schemas/payment.schema';
 
 import { users } from 'src/users/schemas/users.schema';
-import OrderStatus from '../constants/order-status.constant';
 
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
   studentId: integer('student_id')
     .references(() => users.id)
     .notNull(),
-  totalAmount: integer('total_amount').notNull(),
-  orderMethod: varchar('order_method').notNull(),
-  orderStatus: varchar('order_status')
-    .notNull()
-    .default(OrderStatus.PENDING),
-  paidAt: timestamp('paid_at').notNull().defaultNow(),
+  quantity: integer('quantity').notNull(),
+  totalPrice: integer('total_price').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 export const orderRelations = relations(orders, ({ one, many }) => ({
@@ -29,6 +21,7 @@ export const orderRelations = relations(orders, ({ one, many }) => ({
     fields: [orders.studentId],
     references: [users.id],
   }),
+  payments: one(payments),
 }));
 
 export type OrdersType = typeof orders.$inferSelect;

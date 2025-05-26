@@ -13,7 +13,7 @@ import { users } from 'src/users/schemas/users.schema';
 
 export const courses = pgTable('courses', {
   id: serial('id').primaryKey(),
-  instrukturId: integer('instruktur_id').references(() => users.id),
+  instructorId: integer('instructor_id').references(() => users.id),
   title: varchar('title', { length: 50 }).notNull(),
   category: varchar('category', { length: 20 }).notNull(),
   price: integer('price').notNull(),
@@ -26,7 +26,7 @@ export const courses = pgTable('courses', {
 
 export const courseRelations = relations(courses, ({ one, many }) => ({
   user: one(users, {
-    fields: [courses.instrukturId],
+    fields: [courses.instructorId],
     references: [users.id],
   }),
 }));

@@ -21,7 +21,7 @@ export class CoursesService {
   ): Promise<CoursesType> {
     const savedCourse = await this.coursesRepository
       .insert(courses)
-      .values({ ...createCourseDto, instrukturId: userId })
+      .values({ ...createCourseDto, instructorId: userId })
       .returning();
 
     return savedCourse[0];

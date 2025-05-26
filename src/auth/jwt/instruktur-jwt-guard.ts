@@ -9,7 +9,7 @@ import { PayloadType } from '../constants/types';
 import UserRole from 'src/users/constants/user-role';
 
 @Injectable()
-export class AdminJwtGuard extends AuthGuard('jwt') {
+export class InstructorJwtGuard extends AuthGuard('jwt') {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
@@ -23,7 +23,7 @@ export class AdminJwtGuard extends AuthGuard('jwt') {
 
     console.log(user);
 
-    const roleIsValid = user.role !== (UserRole.ADMIN as string);
+    const roleIsValid = user.role !== (UserRole.STUDENT as string);
     const userIdExist = user.userId;
 
     if (userIdExist && roleIsValid) {

@@ -9,7 +9,7 @@ import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { CoursesController } from './courses/courses.controller';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { PaymentsModule } from './payments/payments.module';
+import { OrdersModule } from './orders/orders.module';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
 
 @Module({
@@ -19,7 +19,7 @@ import { EnrollmentsModule } from './enrollments/enrollments.module';
     CoursesModule,
     AuthModule,
     UsersModule,
-    PaymentsModule,
+    OrdersModule,
     EnrollmentsModule,
   ],
   controllers: [AppController],

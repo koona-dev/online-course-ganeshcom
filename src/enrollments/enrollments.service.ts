@@ -4,10 +4,9 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { QueryResult } from 'pg';
 
 import { DatabaseAsyncProvider } from 'src/database/database.provider';
-import { CreateEnrollmentDto } from './dto/create-enrollment.dto';
 import { enrollments, EnrollmentsType } from './schemas/enrollment.schema';
-import { UpdateEnrollmentDto } from './dto/update-enrollment.dto';
 import queryFilter from 'src/common/utils/query-filter';
+import { UpdateEnrollmentDto } from './dto/update-enrollment.dto';
 
 @Injectable()
 export class EnrollmentsService {
@@ -16,12 +15,15 @@ export class EnrollmentsService {
     private readonly enrollmentsRepository: NodePgDatabase<EnrollmentsType>,
   ) {}
 
-  async create(
-    createEnrollmentsDto: CreateEnrollmentDto,
-  ): Promise<EnrollmentsType> {
+  async create(body: { [field: string]: any }): Promise<EnrollmentsType> {
+    const enrollmentData = {
+      userId: body.userId,
+      courseId: body.courseId,
+      orderId: body.orderId,
+    };
     const savedCourse = await this.enrollmentsRepository
       .insert(enrollments)
-      .values(createEnrollmentsDto)
+      .values(enrollmentData)
       .returning();
 
     return savedCourse[0];

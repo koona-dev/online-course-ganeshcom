@@ -18,15 +18,51 @@ import { UpdateOrderDto } from './dto/update-orders.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-guard';
 import { StudentJwtGuard } from 'src/auth/jwt/student-jwt-guard';
 import { AdminJwtGuard } from 'src/auth/jwt/admin-jwt-guard';
+import { EnrollmentsService } from 'src/enrollments/enrollments.service';
+import { CoursesService } from 'src/courses/courses.service';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(
+    private readonly ordersService: OrdersService,
+    private readonly enrollmentService: EnrollmentsService,
+    private readonly courseService: CoursesService,
+  ) {}
 
-  @Post()
+  @Post('add-cart')
   @UseGuards(JwtAuthGuard, StudentJwtGuard)
-  create(@Body() createOrdersDto: CreateOrderDto, @Request() request) {
-    return this.ordersService.create(+request.user.userId, createOrdersDto);
+  async create(@Request() request, @Body() createOrdersDto: CreateOrderDto) {
+    const filter = {
+      studentId: request.studentId,
+      OrderStatus: !OrderStatus.PAID_OFF,
+    };
+    let order = await this.ordersService.findOne(filter);
+
+    if (!order) {
+      order = await this.ordersService.create(+request.user.userId);
+    }
+
+    const addEnrollment = await this.enrollmentService.create({
+      userId: request.user.userId,
+      courseId: createOrdersDto.courseId,
+      orderId: order.id,
+    });
+
+    const getCourses = await this.courseService.findOne(addEnrollment.courseId);
+
+    const updateOrderDto: UpdateOrderDto = {
+      studentId: +request.user.userId,
+      quantity: order.quantity!++,
+      totalPrice: order.totalPrice! + getCourses.price,
+      orderStatus: 'pending',
+    };
+
+    await this.ordersService.update(+request.user.userId, updateOrderDto);
+
+    return {
+      message: 'Order created successfully',
+      data: { order: order, enrollments: [addEnrollment] },
+    };
   }
 
   @Get()
@@ -60,7 +96,9 @@ export class OrdersController {
     )
     orderId: number,
   ) {
-    return this.ordersService.findOne(orderId);
+    return this.ordersService.findOne({
+      id: orderId,
+    });
   }
 
   @Patch(':orderId')

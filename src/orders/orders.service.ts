@@ -4,7 +4,6 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { QueryResult } from 'pg';
 
 import { DatabaseAsyncProvider } from 'src/database/database.provider';
-import { CreateOrderDto } from './dto/create-orders.dto';
 import { orders, OrdersType } from './schemas/orders.schema';
 import { UpdateOrderDto } from './dto/update-orders.dto';
 import queryFilter from 'src/common/utils/query-filter';
@@ -16,16 +15,13 @@ export class OrdersService {
     private readonly ordersRepository: NodePgDatabase<OrdersType>,
   ) {}
 
-  async create(
-    studentId: number,
-    createOrdersDto: CreateOrderDto,
-  ): Promise<OrdersType> {
-    const savedCourse = await this.ordersRepository
+  async create(studentId: number): Promise<OrdersType> {
+    const savedOrders = await this.ordersRepository
       .insert(orders)
-      .values({ ...createOrdersDto, studentId })
+      .values({ studentId })
       .returning();
 
-    return savedCourse[0];
+    return savedOrders[0];
   }
 
   async findAll(
@@ -42,27 +38,34 @@ export class OrdersService {
     return query;
   }
 
-  async findOne(orderId: number): Promise<OrdersType> {
-    const order = await this.ordersRepository
-      .select()
-      .from(orders)
-      .where(eq(orders.id, orderId))
-      .limit(1);
+  async findOne(
+    dataFilter: { [field: string]: any },
+    options?: {
+      mode?: 'and' | 'or';
+    },
+  ): Promise<OrdersType> {
+    const order = this.ordersRepository.select().from(orders);
 
-    return order[0];
+    const result = await queryFilter<OrdersType>(
+      order,
+      orders,
+      dataFilter,
+      options,
+    );
+    return result[0];
   }
 
   async update(
     orderId: number,
     updateOrdersDto: UpdateOrderDto,
   ): Promise<OrdersType> {
-    const updatedCourse = await this.ordersRepository
+    const updatedOrder = await this.ordersRepository
       .update(orders)
       .set(updateOrdersDto)
       .where(eq(orders.id, orderId))
       .returning();
 
-    return updatedCourse[0];
+    return updatedOrder[0];
   }
 
   async remove(orderId: number): Promise<QueryResult<never>> {

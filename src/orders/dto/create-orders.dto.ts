@@ -1,11 +1,7 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateOrderDto {
-  @IsNumber()
   @IsNotEmpty()
-  readonly quantity: number;
-
   @IsNumber()
-  @IsNotEmpty()
-  readonly totalPrice: number;
+  readonly courseId: number;
 }

@@ -6,7 +6,7 @@ import { QueryResult } from 'pg';
 import { DatabaseAsyncProvider } from 'src/database/database.provider';
 import { orders, OrdersType } from './schemas/orders.schema';
 import { UpdateOrderDto } from './dto/update-orders.dto';
-import queryFilter from 'src/common/utils/query-filter';
+import { queryFilter } from 'src/common/utils/query-filter';
 
 @Injectable()
 export class OrdersService {
@@ -52,6 +52,7 @@ export class OrdersService {
       dataFilter,
       options,
     );
+
     return result[0];
   }
 

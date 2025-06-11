@@ -4,9 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { LoginDto } from './dto/login.dto';
-import { users } from 'src/users/schemas/users.schema';
 import { PayloadType } from './constants/types';
-import { and, eq } from 'drizzle-orm';
 
 @Injectable()
 export class AuthService {
@@ -17,11 +15,12 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<{ accessToken: string }> {
     try {
-      const filterUser = and(
-        eq(users.email, loginDto.email),
-        eq(users.password, loginDto.password),
-      );
-      const user = await this.userService.findOne(filterUser!); // 1.
+      const filter = {
+        email: loginDto.email,
+        password: loginDto.password,
+      };
+
+      const user = await this.userService.findOne(filter); // 1.
 
       const passwordMatched = await bcrypt.compare(
         loginDto.password,
@@ -35,6 +34,7 @@ export class AuthService {
           role: user.role,
         };
 
+        console.log(payload);
         return {
           accessToken: this.jwtService.sign(payload),
         };

@@ -23,7 +23,7 @@ export class AdminJwtGuard extends AuthGuard('jwt') {
 
     console.log(user);
 
-    const roleIsValid = user.role !== (UserRole.ADMIN as string);
+    const roleIsValid = user.role === (UserRole.ADMIN as string);
     const userIdExist = user.userId;
 
     if (userIdExist && roleIsValid) {

@@ -8,6 +8,7 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
+import { enrollments } from 'src/enrollments/schemas/enrollment.schema';
 
 import { users } from 'src/users/schemas/users.schema';
 
@@ -29,6 +30,7 @@ export const courseRelations = relations(courses, ({ one, many }) => ({
     fields: [courses.instructorId],
     references: [users.id],
   }),
+  enrollments: many(enrollments),
 }));
 
 export type CoursesType = typeof courses.$inferSelect;

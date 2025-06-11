@@ -7,9 +7,11 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
+import { enrollments } from 'src/enrollments/schemas/enrollment.schema';
 import { payments } from 'src/payments/schemas/payment.schema';
 
 import { users } from 'src/users/schemas/users.schema';
+import { OrderStatus } from '../constants/order-status';
 
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
@@ -28,7 +30,8 @@ export const orderRelations = relations(orders, ({ one, many }) => ({
     fields: [orders.studentId],
     references: [users.id],
   }),
-  payments: one(payments),
+  enrollments: many(enrollments),
+  payments: many(payments),
 }));
 
 export type OrdersType = typeof orders.$inferSelect;

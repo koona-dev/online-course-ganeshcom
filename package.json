@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "clean": "rd /s /q dist node_modules && del pnpm-lock.yaml && pnpm store prune && pnpm cache delete && pnpm init -y && pnpm install",
     "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"
   },

@@ -14,7 +14,6 @@ import {
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { JwtAuthGuard } from 'src/auth/jwt/jwt-guard';
 import { StudentJwtGuard } from 'src/auth/jwt/student-jwt-guard';
 import { AdminJwtGuard } from 'src/auth/jwt/admin-jwt-guard';
 
@@ -23,19 +22,19 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, StudentJwtGuard)
+  @UseGuards(StudentJwtGuard)
   create(@Body() createPaymentDto: CreatePaymentDto) {
     return this.paymentsService.create(createPaymentDto);
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, AdminJwtGuard)
+  @UseGuards(AdminJwtGuard)
   findAll() {
     return this.paymentsService.findAll();
   }
 
   @Get(':paymentId')
-  @UseGuards(JwtAuthGuard, StudentJwtGuard)
+  @UseGuards(StudentJwtGuard)
   findOne(
     @Param(
       'paymentId',
@@ -47,7 +46,7 @@ export class PaymentsController {
   }
 
   @Patch(':paymentId')
-  @UseGuards(JwtAuthGuard, AdminJwtGuard)
+  @UseGuards(StudentJwtGuard)
   update(
     @Param('paymentId', ParseIntPipe) paymentId: number,
     @Body() updatePaymentDto: UpdatePaymentDto,
@@ -56,7 +55,7 @@ export class PaymentsController {
   }
 
   @Delete(':paymentId')
-  @UseGuards(JwtAuthGuard, AdminJwtGuard)
+  @UseGuards(AdminJwtGuard)
   remove(@Param('paymentId', ParseIntPipe) paymentId: number) {
     return this.paymentsService.remove(paymentId);
   }

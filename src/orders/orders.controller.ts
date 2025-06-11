@@ -15,11 +15,11 @@ import {
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-orders.dto';
 import { UpdateOrderDto } from './dto/update-orders.dto';
-import { JwtAuthGuard } from 'src/auth/jwt/jwt-guard';
 import { StudentJwtGuard } from 'src/auth/jwt/student-jwt-guard';
 import { AdminJwtGuard } from 'src/auth/jwt/admin-jwt-guard';
 import { EnrollmentsService } from 'src/enrollments/enrollments.service';
 import { CoursesService } from 'src/courses/courses.service';
+import { OrderStatus } from './constants/order-status';
 
 @Controller('orders')
 export class OrdersController {
@@ -30,12 +30,13 @@ export class OrdersController {
   ) {}
 
   @Post('add-cart')
-  @UseGuards(JwtAuthGuard, StudentJwtGuard)
+  @UseGuards(StudentJwtGuard)
   async create(@Request() request, @Body() createOrdersDto: CreateOrderDto) {
     const filter = {
       studentId: request.studentId,
       OrderStatus: !OrderStatus.PAID_OFF,
     };
+
     let order = await this.ordersService.findOne(filter);
 
     if (!order) {
@@ -66,13 +67,13 @@ export class OrdersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, AdminJwtGuard)
+  @UseGuards(AdminJwtGuard)
   findAll() {
     return this.ordersService.findAll();
   }
 
   @Get(':studentId')
-  @UseGuards(JwtAuthGuard, StudentJwtGuard)
+  @UseGuards(StudentJwtGuard)
   findManyByUserId(
     @Param(
       'studentId',
@@ -88,7 +89,7 @@ export class OrdersController {
   }
 
   @Get(':orderId')
-  @UseGuards(JwtAuthGuard, StudentJwtGuard)
+  @UseGuards(StudentJwtGuard)
   findOne(
     @Param(
       'orderId',
@@ -102,7 +103,7 @@ export class OrdersController {
   }
 
   @Patch(':orderId')
-  @UseGuards(JwtAuthGuard, AdminJwtGuard)
+  @UseGuards(AdminJwtGuard)
   update(
     @Param('orderId', ParseIntPipe) orderId: number,
     @Body() updateOrderDto: UpdateOrderDto,
@@ -111,7 +112,7 @@ export class OrdersController {
   }
 
   @Delete(':orderId')
-  @UseGuards(JwtAuthGuard, AdminJwtGuard)
+  @UseGuards(AdminJwtGuard)
   remove(@Param('orderId', ParseIntPipe) orderId: number) {
     return this.ordersService.remove(orderId);
   }

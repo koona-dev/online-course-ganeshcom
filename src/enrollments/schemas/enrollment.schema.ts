@@ -12,6 +12,7 @@ import { courses } from 'src/courses/schemas/courses.schema';
 
 import { orders } from 'src/orders/schemas/orders.schema';
 import { users } from 'src/users/schemas/users.schema';
+import { CourseStatus } from '../constants/course-status';
 
 export const enrollments = pgTable('enrollments', {
   id: serial('id').primaryKey(),
@@ -26,7 +27,6 @@ export const enrollments = pgTable('enrollments', {
     .notNull(),
   alreadyPurchased: boolean('already_purchased').default(false),
   courseStatus: varchar('course_status').default(CourseStatus.NOT_STARTED),
-  enrolledAt: timestamp('enrolled_at'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });

@@ -3,9 +3,11 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { ConfigService } from '@nestjs/config';
 
-import * as usersSchema from 'src/users/schemas/users.schema';
-import * as coursesSchema from '../courses/schemas/courses.schema';
-import * as ordersSchema from 'src/orders/schemas/orders.schema';
+import * as userSchema from 'src/users/schemas/users.schema';
+import * as courseSchema from 'src/courses/schemas/courses.schema';
+import * as orderSchema from 'src/orders/schemas/orders.schema';
+import * as enrollmentSchema from 'src/enrollments/schemas/enrollment.schema';
+import * as paymentSchema from 'src/payments/schemas/payment.schema';
 
 export const DatabaseAsyncProvider = 'DatabaseAsyncProvider';
 
@@ -21,7 +23,13 @@ export const DatabaseProvider = [
       });
 
       return drizzle(pool, {
-        schema: { ...usersSchema, ...coursesSchema, ...ordersSchema },
+        schema: {
+          ...userSchema,
+          ...courseSchema,
+          ...orderSchema,
+          ...enrollmentSchema,
+          ...paymentSchema,
+        },
       });
     },
   },

@@ -1,5 +1,6 @@
 import {
   Controller,
+  Request,
   Get,
   Body,
   Patch,
@@ -12,7 +13,6 @@ import {
 
 import { EnrollmentsService } from './enrollments.service';
 import { UpdateEnrollmentDto } from './dto/update-enrollment.dto';
-import { JwtAuthGuard } from 'src/auth/jwt/jwt-guard';
 import { StudentJwtGuard } from 'src/auth/jwt/student-jwt-guard';
 import { AdminJwtGuard } from 'src/auth/jwt/admin-jwt-guard';
 
@@ -20,46 +20,94 @@ import { AdminJwtGuard } from 'src/auth/jwt/admin-jwt-guard';
 export class EnrollmentsController {
   constructor(private readonly enrollmentsService: EnrollmentsService) {}
 
-  @Get(':studentId')
-  @UseGuards(JwtAuthGuard, StudentJwtGuard)
+  @Get(':orderId')
+  @UseGuards(StudentJwtGuard)
   findMany(
     @Param(
-      'studentId',
+      'orderId',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
-    studentId: number,
+    orderId: number,
+    @Request() request,
   ) {
     const filter = {
-      studentId: studentId,
+      orderId: orderId,
+      userId: +request.user.userId,
     };
 
     return this.enrollmentsService.findMany(filter);
   }
 
-  @Get(':enrollmentId')
-  @UseGuards(JwtAuthGuard, StudentJwtGuard)
+  @Get(':orderId/:courseId')
+  @UseGuards(StudentJwtGuard)
   findOne(
     @Param(
-      'enrollmentId',
+      'orderId',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
-    enrollmentId: number,
+    orderId: number,
+    @Param(
+      'courseId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    courseId: number,
+    @Request() request,
   ) {
-    return this.enrollmentsService.findOne(enrollmentId);
+    const filter = {
+      userId: +request.user.userId,
+      orderId: orderId,
+      courseId: courseId,
+    };
+
+    return this.enrollmentsService.findOne(filter);
   }
 
-  @Patch(':enrollmentId')
-  @UseGuards(JwtAuthGuard, AdminJwtGuard)
+  @Patch(':orderId/:courseId')
+  @UseGuards(AdminJwtGuard)
   update(
-    @Param('enrollmentId', ParseIntPipe) enrollmentId: number,
+    @Param(
+      'orderId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    orderId: number,
+    @Param(
+      'courseId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    courseId: number,
+    @Request() request,
     @Body() updateEnrollmentDto: UpdateEnrollmentDto,
   ) {
-    return this.enrollmentsService.update(enrollmentId, updateEnrollmentDto);
+    const filter = {
+      userId: +request.user.userId,
+      orderId: orderId,
+      courseId: courseId,
+    };
+
+    return this.enrollmentsService.update(updateEnrollmentDto, filter);
   }
 
-  @Delete(':enrollmentId')
-  @UseGuards(JwtAuthGuard, AdminJwtGuard)
-  remove(@Param('enrollmentId', ParseIntPipe) enrollmentId: number) {
-    return this.enrollmentsService.remove(enrollmentId);
+  @Delete(':orderId/:courseId')
+  @UseGuards(AdminJwtGuard)
+  remove(
+    @Param(
+      'orderId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    orderId: number,
+    @Param(
+      'courseId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    courseId: number,
+    @Request() request,
+  ) {
+    const filter = {
+      userId: +request.user.userId,
+      orderId: orderId,
+      courseId: courseId,
+    };
+
+    return this.enrollmentsService.remove(filter);
   }
 }

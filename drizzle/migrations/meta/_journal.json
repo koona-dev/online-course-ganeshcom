@@ -3,10 +3,17 @@
   "dialect": "postgresql",
   "entries": [
     {
-      "idx": 0,
+      "idx": 1,
       "version": "7",
-      "when": 1747968360580,
-      "tag": "0000_flimsy_micromax",
+      "when": 1749579603976,
+      "tag": "0001_strong_forge",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1749580501549,
+      "tag": "0002_new_edwin_jarvis",
       "breakpoints": true
     }
   ]

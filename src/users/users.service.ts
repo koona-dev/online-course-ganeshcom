@@ -1,15 +1,20 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { eq, SQL } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import * as bcrypt from 'bcryptjs';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { users, UserType } from './schemas/users.schema';
+import { DatabaseAsyncProvider } from 'src/database/database.provider';
+import { queryFilter } from 'src/common/utils/query-filter';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: NodePgDatabase<UserType>) {}
+  constructor(
+    @Inject(DatabaseAsyncProvider)
+    private readonly userRepository: NodePgDatabase<UserType>,
+  ) {}
 
   async create(userDto: CreateUserDto): Promise<UserType> {
     const salt = await bcrypt.genSalt(); // 2.
@@ -23,13 +28,22 @@ export class UsersService {
     return savedUser[0];
   }
 
-  async findOne(filter: SQL<unknown>): Promise<UserType> {
-    const user = await this.userRepository.select().from(users).where(filter);
+  async findOne(
+    dataFilter: { [field: string]: any },
+    options?: {
+      mode?: 'and' | 'or';
+    },
+  ): Promise<UserType> {
+    const order = this.userRepository.select().from(users);
 
-    if (!user) {
-      throw new UnauthorizedException('Could not find user');
-    }
-    return user[0];
+    const result = await queryFilter<UserType>(
+      order,
+      users,
+      dataFilter,
+      options,
+    );
+
+    return result[0];
   }
 
   async findAll(): Promise<UserType[]> {

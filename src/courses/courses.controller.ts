@@ -14,14 +14,14 @@ import {
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
-import { AdminJwtGuard } from 'src/auth/jwt/admin-jwt-guard';
+import { InstructorJwtGuard } from 'src/auth/jwt/instruktur-jwt-guard';
 
 @Controller('courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
-  @UseGuards(AdminJwtGuard)
+  @UseGuards(InstructorJwtGuard)
   create(@Body() createCourseDto: CreateCourseDto, @Request() request) {
     return this.coursesService.create(+request.user.userId, createCourseDto);
   }
@@ -43,7 +43,7 @@ export class CoursesController {
   }
 
   @Patch(':courseId')
-  @UseGuards(AdminJwtGuard)
+  @UseGuards(InstructorJwtGuard)
   update(
     @Param('courseId', ParseIntPipe) courseId: string,
     @Body() updateCourseDto: UpdateCourseDto,
@@ -52,7 +52,7 @@ export class CoursesController {
   }
 
   @Delete(':courseId')
-  @UseGuards(AdminJwtGuard)
+  @UseGuards(InstructorJwtGuard)
   remove(@Param('courseId', ParseIntPipe) courseId: string) {
     return this.coursesService.remove(+courseId);
   }

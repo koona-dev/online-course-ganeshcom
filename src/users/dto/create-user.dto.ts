@@ -21,7 +21,6 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
-  @IsStrongPassword()
   @MinLength(8)
   readonly password: string;
 

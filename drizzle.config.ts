@@ -4,7 +4,13 @@ const env = process.env;
 
 export default defineConfig({
   dialect: 'postgresql',
-  schema: './src/courses/schema/course.schema.ts',
+  schema: [
+    './src/users/schemas/users.schema.ts',
+    './src/courses/schemas/courses.schema.ts',
+    './src/orders/schemas/orders.schema.ts',
+    './src/enrollments/schemas/enrollment.schema.ts',
+    './src/payments/schemas/payment.schema.ts',
+  ],
   out: './drizzle/migrations',
   dbCredentials: {
     host: 'localhost',

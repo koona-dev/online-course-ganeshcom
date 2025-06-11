@@ -1,11 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { QueryResult } from 'pg';
 
 import { DatabaseAsyncProvider } from 'src/database/database.provider';
 import { enrollments, EnrollmentsType } from './schemas/enrollment.schema';
-import queryFilter from 'src/common/utils/query-filter';
+import {
+  queryDeleteFilter,
+  queryFilter,
+  queryUpdateFilter,
+} from 'src/common/utils/query-filter';
 import { UpdateEnrollmentDto } from './dto/update-enrollment.dto';
 
 @Injectable()
@@ -48,34 +52,60 @@ export class EnrollmentsService {
     return query;
   }
 
-  async findOne(enrollmentId: number): Promise<EnrollmentsType> {
-    const enrollment = await this.enrollmentsRepository
-      .select()
-      .from(enrollments)
-      .where(eq(enrollments.id, enrollmentId))
-      .limit(1);
+  async findOne(
+    dataFilter: { [field: string]: any },
+    options?: {
+      mode?: 'and' | 'or';
+    },
+  ): Promise<EnrollmentsType> {
+    const query = this.enrollmentsRepository.select().from(enrollments);
+    let results: EnrollmentsType[] = [];
 
-    return enrollment[0];
+    results = await queryFilter<EnrollmentsType>(
+      query,
+      enrollments,
+      dataFilter,
+      options,
+    );
+
+    return results[0];
   }
 
   async update(
-    enrollmentId: number,
     updateEnrollmentsDto: UpdateEnrollmentDto,
+    dataFilter: { [field: string]: any },
+    options?: {
+      mode?: 'and' | 'or';
+    },
   ): Promise<EnrollmentsType> {
-    const updatedCourse = await this.enrollmentsRepository
+    let results: EnrollmentsType[] = [];
+    const updatedCourse = this.enrollmentsRepository
       .update(enrollments)
-      .set(updateEnrollmentsDto)
-      .where(eq(enrollments.id, enrollmentId))
-      .returning();
+      .set(updateEnrollmentsDto);
 
-    return updatedCourse[0];
+    results = await queryUpdateFilter<EnrollmentsType>(
+      updatedCourse,
+      enrollments,
+      dataFilter,
+      options,
+    );
+
+    return results[0];
   }
 
-  async remove(enrollmentId: number): Promise<QueryResult<never>> {
-    const deletedEnrollment = await this.enrollmentsRepository
-      .delete(enrollments)
-      .where(eq(enrollments.id, enrollmentId));
+  async remove(
+    dataFilter: { [field: string]: any },
+    options?: {
+      mode?: 'and' | 'or';
+    },
+  ): Promise<QueryResult<never>> {
+    const deletedEnrollment = this.enrollmentsRepository.delete(enrollments);
 
-    return deletedEnrollment;
+    return await queryDeleteFilter<EnrollmentsType>(
+      deletedEnrollment,
+      enrollments,
+      dataFilter,
+      options,
+    );
   }
 }

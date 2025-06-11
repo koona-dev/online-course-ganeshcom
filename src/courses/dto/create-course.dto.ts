@@ -4,7 +4,6 @@ import {
   IsEnum,
   IsNumber,
   MaxLength,
-  IsDecimal,
 } from 'class-validator';
 
 import CourseCategory from '../constants/course-category.constant';
@@ -28,10 +27,10 @@ export class CreateCourseDto {
   readonly description: string;
 
   @IsNotEmpty()
-  @IsDecimal()
+  @IsNumber()
   readonly rating: number;
 
   @IsNotEmpty()
-  @IsDecimal()
+  @IsNumber()
   readonly discount: number;
 }

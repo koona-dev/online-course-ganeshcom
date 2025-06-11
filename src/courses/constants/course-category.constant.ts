@@ -1,4 +1,4 @@
-enum CourseCategory {
+export enum CourseCategory {
   WEB_DEVELOPMENT = 'Web Development',
   MOBILE_DEVELOPMENT = 'Mobile Development',
   DATA_SCIENCE = 'Data Science',
